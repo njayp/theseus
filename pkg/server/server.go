@@ -29,6 +29,7 @@ func (s *Server) addHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Write([]byte("Image added and container started successfully"))
 }
 
 func (s *Server) removeHandler(w http.ResponseWriter, r *http.Request) {
@@ -37,6 +38,7 @@ func (s *Server) removeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Write([]byte("Image removed successfully"))
 }
 
 func (s *Server) upgradeHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +47,7 @@ func (s *Server) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Write([]byte("Image upgraded successfully"))
 }
 
 func (s *Server) notFoundHandler(w http.ResponseWriter, r *http.Request) {
