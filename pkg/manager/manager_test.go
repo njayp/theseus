@@ -20,7 +20,11 @@ func TestManager(t *testing.T) {
 	imageName := "jmalloc/echo-server"
 
 	// Test AddImage
-	err = mgr.AddImage(ctx, imageName)
+	err = mgr.AddImage(ctx, Config{
+		ContainerConfig: &container.Config{
+			Image: imageName,
+		},
+	})
 	if err != nil {
 		t.Fatalf("Failed to add image: %v", err)
 	}

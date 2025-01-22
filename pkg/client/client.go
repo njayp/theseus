@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/njayp/theseus/pkg/server"
+	"github.com/njayp/theseus/pkg/manager"
 )
 
 type Client struct {
@@ -17,12 +17,8 @@ func NewClient(baseURL string) *Client {
 	return &Client{BaseURL: baseURL}
 }
 
-func (c *Client) AddImage(imageName string) error {
-	data := server.AddRequest{
-		ImageName: imageName,
-	}
-
-	body, err := json.Marshal(data)
+func (c *Client) AddImage(config manager.Config) error {
+	body, err := json.Marshal(config)
 	if err != nil {
 		return fmt.Errorf("failed to marshal request body: %v", err)
 	}
@@ -41,7 +37,7 @@ func (c *Client) AddImage(imageName string) error {
 }
 
 func (c *Client) RemoveImage(imageName string) error {
-	data := server.RemoveRequest{
+	data := manager.RemoveRequest{
 		ImageName: imageName,
 	}
 

@@ -27,18 +27,18 @@ func NewServer() (*Server, error) {
 
 func (s *Server) addHandler(w http.ResponseWriter, r *http.Request) {
 	// Define a struct to hold the request body
-	data := AddRequest{}
+	config := manager.Config{}
 
 	// Read the body
-	err := json.NewDecoder(r.Body).Decode(&data)
+	err := json.NewDecoder(r.Body).Decode(&config)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	log.Printf("Received request to add image: %s", data.ImageName)
+	log.Printf("Received request to add image: %s", config.ContainerConfig.Image)
 
-	err = s.manager.AddImage(r.Context(), data.ImageName)
+	err = s.manager.AddImage(r.Context(), config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -49,7 +49,7 @@ func (s *Server) addHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) removeHandler(w http.ResponseWriter, r *http.Request) {
 	// Define a struct to hold the request body
-	data := RemoveRequest{}
+	data := manager.RemoveRequest{}
 
 	// Read the body
 	err := json.NewDecoder(r.Body).Decode(&data)

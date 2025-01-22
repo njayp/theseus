@@ -2,20 +2,45 @@ package client
 
 import (
 	"testing"
+
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/go-connections/nat"
+	"github.com/njayp/theseus/pkg/manager"
 )
 
-func TestClient(t *testing.T) {
-	// Create a new client
-	client := NewClient("http://localhost:8080")
+// var client = NewClient("http://pi.njayp.net")
+var client = NewClient("http://localhost:8080")
 
-	// Test AddImage
-	err := client.AddImage("jmalloc/echo-server")
+const testImage = "jmalloc/echo-server"
+
+func TestAdd(t *testing.T) {
+	config := manager.Config{
+		ContainerConfig: &container.Config{
+			Image: testImage,
+			ExposedPorts: nat.PortSet{
+				nat.Port("8080/tcp"): struct{}{},
+			},
+		},
+		HostConfig: &container.HostConfig{
+			PortBindings: nat.PortMap{
+				nat.Port("8080/tcp"): []nat.PortBinding{
+					{
+						HostIP:   "0.0.0.0",
+						HostPort: "80",
+					},
+				},
+			},
+		},
+	}
+
+	err := client.AddImage(config)
 	if err != nil {
 		t.Fatalf("t1: %v", err)
 	}
+}
 
-	// Test RemoveImage
-	err = client.RemoveImage("jmalloc/echo-server")
+func TestRemove(t *testing.T) {
+	err := client.RemoveImage(testImage)
 	if err != nil {
 		t.Fatalf("t2: %v", err)
 	}
