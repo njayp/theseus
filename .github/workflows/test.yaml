@@ -6,7 +6,7 @@ on:
       go-version:
         required: false
         type: string
-        default: "latest"
+        default: "1.23"
 
 jobs:
   test:
