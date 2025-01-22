@@ -1,4 +1,4 @@
-name: Reusable Go Tests
+name: Go Tests
 
 on:
   workflow_call: # Makes this workflow reusable
