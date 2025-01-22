@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -8,12 +9,12 @@ import (
 )
 
 type Server struct {
-	manager *manager.ImageManager
+	manager *manager.Manager
 }
 
 func NewServer() (*Server, error) {
 	// Initialize the image manager
-	mgr, err := manager.NewImageManager()
+	mgr, err := manager.NewManager()
 	if err != nil {
 		return nil, err
 	}
@@ -24,29 +25,65 @@ func NewServer() (*Server, error) {
 }
 
 func (s *Server) addHandler(w http.ResponseWriter, r *http.Request) {
-	err := s.manager.AddImage(r.Context(), "nginx:latest", "nginx-container")
+	// Define a struct to hold the request body
+	data := AddRequest{}
+
+	// Read the body
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err = s.manager.AddImage(r.Context(), data.ImageName, data.ContainerName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	w.Write([]byte("Image added and container started successfully"))
 }
 
 func (s *Server) removeHandler(w http.ResponseWriter, r *http.Request) {
-	err := s.manager.RemoveImage(r.Context(), "nginx:latest")
+	// Define a struct to hold the request body
+	data := RemoveRequest{}
+
+	// Read the body
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err = s.manager.RemoveImage(r.Context(), data.ImageName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	w.Write([]byte("Image removed successfully"))
 }
 
 func (s *Server) upgradeHandler(w http.ResponseWriter, r *http.Request) {
-	err := s.manager.UpgradeImage(r.Context(), "nginx:latest")
+	// Define a struct to hold the request body
+	data := BuildPayload{}
+
+	// Read the body
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Get the image name from the struct
+	imageName := data.Repository.RepoName
+
+	err = s.manager.UpgradeImage(r.Context(), imageName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	w.Write([]byte("Image upgraded successfully"))
 }
 
