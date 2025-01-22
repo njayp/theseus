@@ -3,6 +3,8 @@ package manager
 import (
 	"context"
 	"fmt"
+	"io"
+	"os"
 	"sync"
 
 	"github.com/docker/docker/api/types/container"
@@ -20,6 +22,7 @@ type Manager struct {
 // ImageContainer represents a Docker image and its running container
 type ImageContainer struct {
 	ImageName     string
+	ImageId       string
 	ContainerID   string
 	ContainerName string
 }
@@ -47,10 +50,15 @@ func (m *Manager) AddImage(ctx context.Context, imageName, containerName string)
 		return fmt.Errorf("image %s is already being managed", imageName)
 	}
 
-	// Pull image if not present
-	_, err := m.client.ImagePull(ctx, imageName, image.PullOptions{})
+	// Pull the latest image
+	err := m.pullImage(ctx, imageName)
 	if err != nil {
-		return fmt.Errorf("failed to pull image %s: %v", imageName, err)
+		return fmt.Errorf("failed to pull latest image %s: %v", imageName, err)
+	}
+
+	digest, _, err := m.client.ImageInspectWithRaw(ctx, imageName)
+	if err != nil {
+		return fmt.Errorf("failed to inspect image %s: %v", imageName, err)
 	}
 
 	// Create and start container
@@ -62,6 +70,7 @@ func (m *Manager) AddImage(ctx context.Context, imageName, containerName string)
 	// Store the image-container pair
 	m.images[imageName] = &ImageContainer{
 		ImageName:     imageName,
+		ImageId:       digest.ID,
 		ContainerID:   containerID,
 		ContainerName: containerName,
 	}
@@ -95,10 +104,20 @@ func (m *Manager) UpgradeImage(ctx context.Context, imageName string) error {
 		return fmt.Errorf("image %s is not being managed", imageName)
 	}
 
-	// Pull the latest version of the image
-	_, err := m.client.ImagePull(ctx, imageName, image.PullOptions{})
+	// Pull the latest image
+	err := m.pullImage(ctx, imageName)
 	if err != nil {
 		return fmt.Errorf("failed to pull latest image %s: %v", imageName, err)
+	}
+
+	digest, _, err := m.client.ImageInspectWithRaw(ctx, imageName)
+	if err != nil {
+		return fmt.Errorf("failed to inspect image %s: %v", imageName, err)
+	}
+
+	// If the digest hasn't changed, do nothing
+	if digest.ID == ic.ImageId {
+		return nil
 	}
 
 	err = m.removeContainer(ctx, ic.ContainerID)
@@ -143,4 +162,17 @@ func (m *Manager) removeContainer(ctx context.Context, id string) error {
 	}
 
 	return m.client.ContainerRemove(ctx, id, container.RemoveOptions{})
+}
+
+func (m *Manager) pullImage(ctx context.Context, imageName string) error {
+	// Pull the latest version of the image
+	reader, err := m.client.ImagePull(ctx, imageName, image.PullOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to pull latest image %s: %v", imageName, err)
+	}
+	defer reader.Close()
+
+	// Print the pull output
+	_, err = io.Copy(os.Stdout, reader)
+	return err
 }
