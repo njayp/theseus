@@ -1,8 +1,7 @@
 package server
 
 type AddRequest struct {
-	ImageName     string `json:"image_name"`
-	ContainerName string `json:"container_name"`
+	ImageName string `json:"image_name"`
 }
 
 type RemoveRequest struct {

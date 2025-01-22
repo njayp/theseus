@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/njayp/theseus/pkg/manager"
@@ -35,7 +36,9 @@ func (s *Server) addHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.manager.AddImage(r.Context(), data.ImageName, data.ContainerName)
+	log.Printf("Received request to add image: %s", data.ImageName)
+
+	err = s.manager.AddImage(r.Context(), data.ImageName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -54,6 +57,8 @@ func (s *Server) removeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	log.Printf("Received request to remove image: %s", data.ImageName)
 
 	err = s.manager.RemoveImage(r.Context(), data.ImageName)
 	if err != nil {
@@ -77,6 +82,7 @@ func (s *Server) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get the image name from the struct
 	imageName := data.Repository.RepoName
+	log.Printf("Received request to upgrade image: %s", imageName)
 
 	err = s.manager.UpgradeImage(r.Context(), imageName)
 	if err != nil {

@@ -18,10 +18,9 @@ func TestManager(t *testing.T) {
 
 	// Define test image and container names
 	imageName := "jmalloc/echo-server"
-	containerName := "test-container"
 
 	// Test AddImage
-	err = mgr.AddImage(ctx, imageName, containerName)
+	err = mgr.AddImage(ctx, imageName)
 	if err != nil {
 		t.Fatalf("Failed to add image: %v", err)
 	}
@@ -34,14 +33,14 @@ func TestManager(t *testing.T) {
 
 	found := false
 	for _, container := range containers {
-		if container.Names[0] == "/"+containerName {
+		if container.Image == imageName {
 			found = true
 			break
 		}
 	}
 
 	if !found {
-		t.Fatalf("Container %s not found", containerName)
+		t.Fatalf("Container %s not found", imageName)
 	}
 
 	// Test UpgradeImage
@@ -63,8 +62,8 @@ func TestManager(t *testing.T) {
 	}
 
 	for _, container := range containers {
-		if container.Names[0] == "/"+containerName {
-			t.Fatalf("Container %s was not removed", containerName)
+		if container.Image == imageName {
+			t.Fatalf("Container %s was not removed", imageName)
 		}
 	}
 }

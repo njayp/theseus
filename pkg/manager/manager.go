@@ -41,7 +41,7 @@ func NewManager() (*Manager, error) {
 }
 
 // AddImage adds a new image to manage and ensures its container is running
-func (m *Manager) AddImage(ctx context.Context, imageName, containerName string) error {
+func (m *Manager) AddImage(ctx context.Context, imageName string) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -62,27 +62,26 @@ func (m *Manager) AddImage(ctx context.Context, imageName, containerName string)
 	}
 
 	// Create and start container
-	containerID, err := m.createAndStartContainer(ctx, imageName, containerName)
+	containerID, err := m.createAndStartContainer(ctx, imageName)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create and start container: %v", err)
 	}
 
 	// Store the image-container pair
 	m.images[imageName] = &ImageContainer{
-		ImageName:     imageName,
-		ImageId:       digest.ID,
-		ContainerID:   containerID,
-		ContainerName: containerName,
+		ImageName:   imageName,
+		ImageId:     digest.ID,
+		ContainerID: containerID,
 	}
 
 	return nil
 }
 
 // createAndStartContainer creates and starts a new container for the given image
-func (m *Manager) createAndStartContainer(ctx context.Context, imageName, containerName string) (string, error) {
+func (m *Manager) createAndStartContainer(ctx context.Context, imageName string) (string, error) {
 	resp, err := m.client.ContainerCreate(ctx, &container.Config{
 		Image: imageName,
-	}, nil, nil, nil, containerName)
+	}, nil, nil, nil, "")
 	if err != nil {
 		return "", fmt.Errorf("failed to create container from image %s: %v", imageName, err)
 	}
@@ -126,7 +125,7 @@ func (m *Manager) UpgradeImage(ctx context.Context, imageName string) error {
 	}
 
 	// Create and start a new container with the latest image
-	newContainerID, err := m.createAndStartContainer(ctx, imageName, ic.ContainerName)
+	newContainerID, err := m.createAndStartContainer(ctx, imageName)
 	if err != nil {
 		return fmt.Errorf("failed to create new container: %v", err)
 	}
