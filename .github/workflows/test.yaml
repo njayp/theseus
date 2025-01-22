@@ -1,0 +1,32 @@
+name: Reusable Go Tests
+
+on:
+  workflow_call: # Makes this workflow reusable
+    inputs:
+      go-version:
+        required: false
+        type: string
+        default: "latest"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ inputs.go-version }}
+
+      # Install dependencies
+      - name: Install dependencies
+        run: go mod tidy
+
+      # Run tests
+      - name: Run tests
+        run: go test ./... -v
