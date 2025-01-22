@@ -6,10 +6,6 @@ on:
       - "v*" # Trigger the workflow on any tag starting with 'v'
 
 jobs:
-  # Uncomment the following lines to include the test workflow
-  #test:
-  #  uses: ./.github/workflows/test.yaml
-
   build_and_push:
     runs-on: ubuntu-latest
 
