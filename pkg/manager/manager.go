@@ -95,10 +95,11 @@ func (m *Manager) createAndStartContainer(ctx context.Context, config Config) (s
 }
 
 // UpgradeImage pulls the latest version of the image and replaces the running container
-func (m *Manager) UpgradeImage(ctx context.Context, imageName string) error {
+func (m *Manager) UpgradeImage(ctx context.Context, build BuildPayload) error {
 	m.Lock()
 	defer m.Unlock()
 
+	imageName := build.Repository.RepoName
 	ic, exists := m.images[imageName]
 	if !exists {
 		return fmt.Errorf("image %s is not being managed", imageName)

@@ -48,7 +48,11 @@ func TestManager(t *testing.T) {
 	}
 
 	// Test UpgradeImage
-	err = mgr.UpgradeImage(ctx, imageName)
+	err = mgr.UpgradeImage(ctx, BuildPayload{
+		Repository: Repository{
+			RepoName: imageName,
+		},
+	})
 	if err != nil {
 		t.Fatalf("Failed to upgrade image: %v", err)
 	}

@@ -71,7 +71,7 @@ func (s *Server) removeHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 	// Define a struct to hold the request body
-	data := BuildPayload{}
+	data := manager.BuildPayload{}
 
 	// Read the body
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -81,10 +81,9 @@ func (s *Server) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the image name from the struct
-	imageName := data.Repository.RepoName
-	log.Printf("Received request to upgrade image: %s", imageName)
+	log.Printf("Received request to upgrade image: %s", data.Repository.RepoName)
 
-	err = s.manager.UpgradeImage(r.Context(), imageName)
+	err = s.manager.UpgradeImage(r.Context(), data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
