@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-tests:
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/test.yaml
 
   build_and_push:
     runs-on: ubuntu-latest
