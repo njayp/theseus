@@ -1,7 +1,10 @@
 package server
 
 import (
+	"bufio"
 	"fmt"
+	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -41,6 +44,57 @@ func TestClient(t *testing.T) {
 						},
 					},
 				},
+			},
+		}
+
+		err := client.AddImage(config)
+		if err != nil {
+			t.Fatalf("t1: %v", err)
+		}
+	})
+
+	t.Run("TestRemove", func(t *testing.T) {
+		err := client.RemoveImage(testImage)
+		if err != nil {
+			t.Fatalf("t2: %v", err)
+		}
+	})
+}
+
+func getEnv() []string {
+	// Load environment variables from .env file
+	envFile := ".env"
+	file, err := os.Open(envFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	// Create a list of environment variables from the .env file
+	envVars := []string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		envVars = append(envVars, line)
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return envVars
+}
+
+func TestProd(t *testing.T) {
+	url := "http://pi.njayp.net"
+	testImage := "njayp/daedalus"
+	client := NewClient(url)
+
+	t.Run("TestAdd", func(t *testing.T) {
+		config := manager.Config{
+			ContainerConfig: &container.Config{
+				Env:   getEnv(),
+				Image: testImage,
 			},
 		}
 

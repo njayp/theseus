@@ -1,0 +1,23 @@
+# Ignore the Dockerfile itself if it’s in the context directory
+Dockerfile
+
+# Ignore build artifacts and other unnecessary files
+node_modules/
+dist/
+*.log
+*.md
+*.git
+*.env
+.github/
+
+# Ignore Docker-related files
+.dockerignore
+.docker-compose.yml
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore test or temp files
+test/
+*.tmp

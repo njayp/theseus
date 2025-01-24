@@ -26,21 +26,22 @@ func NewServer() (*Server, error) {
 }
 
 func (s *Server) addHandler(w http.ResponseWriter, r *http.Request) {
-	// Define a struct to hold the request body
-	config := manager.Config{}
+	log.Println("Received request to add image")
 
 	// Read the body
+	config := manager.Config{}
 	err := json.NewDecoder(r.Body).Decode(&config)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		log.Printf("Failed to decode request body: %v", err)
 		return
 	}
 
-	log.Printf("Received request to add image: %s", config.ContainerConfig.Image)
-
+	log.Printf("Adding image: %s", config.ContainerConfig.Image)
 	err = s.manager.AddImage(r.Context(), config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Failed to add image: %v", err)
 		return
 	}
 
@@ -48,21 +49,22 @@ func (s *Server) addHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) removeHandler(w http.ResponseWriter, r *http.Request) {
-	// Define a struct to hold the request body
-	data := manager.RemoveRequest{}
+	log.Println("Received request to remove image")
 
 	// Read the body
+	data := manager.RemoveRequest{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		log.Printf("Failed to decode request body: %v", err)
 		return
 	}
 
-	log.Printf("Received request to remove image: %s", data.ImageName)
-
+	log.Printf("Removing image: %s", data.ImageName)
 	err = s.manager.RemoveImage(r.Context(), data.ImageName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Failed to remove image: %v", err)
 		return
 	}
 
@@ -70,22 +72,22 @@ func (s *Server) removeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) upgradeHandler(w http.ResponseWriter, r *http.Request) {
-	// Define a struct to hold the request body
-	data := manager.BuildPayload{}
+	log.Println("Received request to upgrade image")
 
 	// Read the body
+	data := manager.BuildPayload{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		log.Printf("Failed to decode request body: %v", err)
 		return
 	}
 
-	// Get the image name from the struct
-	log.Printf("Received request to upgrade image: %s", data.Repository.RepoName)
-
+	log.Printf("Upgrading image: %s", data.Repository.RepoName)
 	err = s.manager.UpgradeImage(r.Context(), data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Failed to upgrade image: %v", err)
 		return
 	}
 
