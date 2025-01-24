@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -9,18 +10,18 @@ import (
 	"github.com/njayp/theseus/pkg/manager"
 )
 
-// var client = NewClient("http://pi.njayp.net")
-var client = NewClient("http://localhost:8080")
-
-const testImage = "jmalloc/echo-server"
-
 func TestClient(t *testing.T) {
 	s, err := NewServer()
 	if err != nil {
 		t.Fatalf("Failed to create server: %v", err)
 	}
 
-	go s.Start(8080)
+	testImage := "jmalloc/echo-server"
+	url := "http://localhost" // "http://pi.njayp.net"
+	port := 8123
+	client := NewClient(fmt.Sprintf("%s:%d", url, port))
+
+	go s.Start(port)
 	time.Sleep(1000 * time.Millisecond)
 
 	t.Run("TestAdd", func(t *testing.T) {

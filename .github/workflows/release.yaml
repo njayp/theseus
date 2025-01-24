@@ -33,7 +33,7 @@ jobs:
           push: true
           tags: |
             ${{ github.repository }}:latest
-            ${{ github.repository }}:${{ github.sha }}
+            ${{ github.repository }}:${{ github.ref_name }}
           platforms: linux/amd64,linux/arm64
 
       # Verify the image is available (optional)
