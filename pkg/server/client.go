@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/njayp/theseus/pkg/manager"
@@ -30,7 +31,8 @@ func (c *Client) AddImage(config manager.Config) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("request failed: %s", resp.Status)
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("request failed: %s: %s", resp.Status, body)
 	}
 
 	return nil
@@ -49,7 +51,8 @@ func (c *Client) UpgradeImage(config manager.BuildPayload) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("request failed: %s", resp.Status)
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("request failed: %s: %s", resp.Status, body)
 	}
 
 	return nil
@@ -78,7 +81,8 @@ func (c *Client) RemoveImage(imageName string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to remove image: %s", resp.Status)
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("request failed: %s: %s", resp.Status, body)
 	}
 
 	return nil

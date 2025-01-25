@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/go-connections/nat"
 	"github.com/njayp/theseus/pkg/manager"
 )
@@ -106,6 +107,13 @@ func TestProd(t *testing.T) {
 							HostIP:   "0.0.0.0",
 							HostPort: "6969",
 						},
+					},
+				},
+				Mounts: []mount.Mount{
+					{
+						Type:   mount.TypeBind,
+						Source: "/home/njayp/RankedStock.json",
+						Target: "/RankedStock.json",
 					},
 				},
 			},
