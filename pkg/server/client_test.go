@@ -95,6 +95,19 @@ func TestProd(t *testing.T) {
 			ContainerConfig: &container.Config{
 				Env:   getEnv(),
 				Image: testImage,
+				ExposedPorts: nat.PortSet{
+					nat.Port("6969/tcp"): struct{}{},
+				},
+			},
+			HostConfig: &container.HostConfig{
+				PortBindings: nat.PortMap{
+					nat.Port("6969/tcp"): []nat.PortBinding{
+						{
+							HostIP:   "0.0.0.0",
+							HostPort: "6969",
+						},
+					},
+				},
 			},
 		}
 
@@ -104,10 +117,24 @@ func TestProd(t *testing.T) {
 		}
 	})
 
+	t.Run("TestUpgrade", func(t *testing.T) {
+		err := client.UpgradeImage(manager.BuildPayload{
+			Repository: manager.Repository{
+				RepoName: testImage,
+			},
+			PushData: manager.PushData{
+				Tag: "latest",
+			},
+		})
+		if err != nil {
+			t.Fatalf("t2: %v", err)
+		}
+	})
+
 	t.Run("TestRemove", func(t *testing.T) {
 		err := client.RemoveImage(testImage)
 		if err != nil {
-			t.Fatalf("t2: %v", err)
+			t.Fatalf("t3: %v", err)
 		}
 	})
 }
