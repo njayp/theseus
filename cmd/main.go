@@ -1,14 +1,14 @@
 package main
 
-import "github.com/njayp/theseus/pkg/server"
+import (
+	"log/slog"
+
+	"github.com/njayp/theseus/pkg/server"
+)
 
 func main() {
-	server, err := server.NewServer()
-	if err != nil {
-		panic(err)
-	}
-
-	if err := server.Start(8080); err != nil {
+	slog.SetLogLoggerLevel(slog.LevelDebug)
+	if err := server.NewServer().Start(8080); err != nil {
 		panic(err)
 	}
 }

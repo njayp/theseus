@@ -15,10 +15,7 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	s, err := NewServer()
-	if err != nil {
-		t.Fatalf("Failed to create server: %v", err)
-	}
+	s := NewServer()
 
 	testImage := "jmalloc/echo-server"
 	url := "http://localhost" // "http://pi.njayp.net"

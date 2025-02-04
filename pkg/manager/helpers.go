@@ -8,6 +8,7 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
+	"github.com/njayp/theseus/pkg/util"
 )
 
 // createAndStartContainer creates and starts a new container for the given image
@@ -45,4 +46,20 @@ func (m *Manager) pullImage(ctx context.Context, imageName string) error {
 	// Print the pull output
 	_, err = io.Copy(os.Stdout, reader)
 	return err
+}
+
+const filename = "data/map.json"
+
+func (m *Manager) writeMap() error {
+	return util.WriteJson(filename, m.images)
+}
+
+func (m *Manager) readMap() error {
+	images, err := util.ReadJson[map[string]*ImageContainer](filename)
+	if err != nil {
+		return err
+	}
+
+	m.images = images
+	return nil
 }

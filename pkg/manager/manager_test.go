@@ -11,16 +11,13 @@ func TestManager(t *testing.T) {
 	ctx := context.Background()
 
 	// Create a new manager
-	mgr, err := NewManager()
-	if err != nil {
-		t.Fatalf("Failed to create manager: %v", err)
-	}
+	mgr := NewManager()
 
 	// Define test image and container names
 	imageName := "jmalloc/echo-server"
 
 	// Test AddImage
-	err = mgr.AddImage(ctx, Config{
+	err := mgr.AddImage(ctx, Config{
 		ContainerConfig: &container.Config{
 			Image: imageName,
 		},

@@ -24,16 +24,22 @@ type ImageContainer struct {
 }
 
 // NewManager creates a new ImageManager instance
-func NewManager() (*Manager, error) {
+func NewManager() *Manager {
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create Docker client: %v", err)
+		panic(err)
 	}
 
-	return &Manager{
+	m := &Manager{
 		client: cli,
-		images: make(map[string]*ImageContainer),
-	}, nil
+	}
+
+	err = m.readMap()
+	if err != nil {
+		m.images = make(map[string]*ImageContainer)
+	}
+
+	return m
 }
 
 // AddImage adds a new image to manage and ensures its container is running
@@ -73,7 +79,7 @@ func (m *Manager) AddImage(ctx context.Context, config Config) error {
 		Config:      config,
 	}
 
-	return nil
+	return m.writeMap()
 }
 
 // UpgradeImage pulls the latest version of the image and replaces the running container
@@ -137,5 +143,5 @@ func (m *Manager) RemoveImage(ctx context.Context, imageName string) error {
 	}
 
 	delete(m.images, imageName)
-	return nil
+	return m.writeMap()
 }

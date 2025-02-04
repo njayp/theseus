@@ -11,3 +11,13 @@ gen:
 .PHONY: test
 test:
 	go test -v ./...
+
+image := njayp/theseus
+
+.PHONY: build
+build:
+	docker build -t $(image) .
+
+.PHONY: push
+push: build
+	docker image push $(image)
