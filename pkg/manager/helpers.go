@@ -48,7 +48,7 @@ func (m *Manager) pullImage(ctx context.Context, imageName string) error {
 	return err
 }
 
-const filename = "data/map.json"
+const filename = "/mnt/map.json"
 
 func (m *Manager) writeMap() error {
 	return util.WriteJson(filename, m.images)

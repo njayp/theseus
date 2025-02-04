@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"sync"
 
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 )
 
@@ -68,6 +69,9 @@ func (m *Manager) AddImage(ctx context.Context, config Config) error {
 	}
 
 	// Create and start container
+	config.HostConfig.RestartPolicy = container.RestartPolicy{
+		Name: container.RestartPolicyOnFailure,
+	}
 	containerID, err := m.createAndStartContainer(ctx, config)
 	if err != nil {
 		return fmt.Errorf("failed to create and start container: %v", err)
