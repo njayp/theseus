@@ -3,6 +3,7 @@ package manager
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"sync"
 
 	"github.com/docker/docker/client"
@@ -36,6 +37,7 @@ func NewManager() *Manager {
 
 	err = m.readMap()
 	if err != nil {
+		slog.Warn("No map found, starting with empty")
 		m.images = make(map[string]*ImageContainer)
 	}
 
@@ -125,7 +127,7 @@ func (m *Manager) UpgradeImage(ctx context.Context, build BuildPayload) error {
 
 	// Update the stored container information
 	ic.ContainerID = newContainerID
-	return nil
+	return m.writeMap()
 }
 
 // RemoveImage removes an image and stops its container
