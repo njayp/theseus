@@ -1,6 +1,4 @@
 github.com/njayp/limiter v1.5.3 h1:/z1CNhxMNYejagdWckqETE+hh1WK6PSz/MCMA3SNEF4=
 github.com/njayp/limiter v1.5.3/go.mod h1:1w92IXK8eMLfMuSKbynVbZDpWCj/AloJ/c94gpd+ufM=
-github.com/njayp/middleware v0.0.1 h1:ZXuHpnK2FnX8bHYOPyH4zoRypUFfGn8o6nKTghz+4NA=
-github.com/njayp/middleware v0.0.1/go.mod h1:ioJX21sQoa/U1cnmmqYD4OxlyZeOqnhO9/nn/yZctjM=
 github.com/njayp/middleware v0.0.2 h1:vttjk5jxeyL/B6rXo79NdvUVS06pcmTwehYYR4lmXNU=
 github.com/njayp/middleware v0.0.2/go.mod h1:ioJX21sQoa/U1cnmmqYD4OxlyZeOqnhO9/nn/yZctjM=

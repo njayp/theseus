@@ -2,6 +2,7 @@ package theseus
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -79,6 +80,10 @@ func getFileSize(client *http.Client, url string) (int, error) {
 		return 0, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
 
 	size, err := strconv.Atoi(resp.Header.Get("Content-Length"))
 	if err != nil {
