@@ -1,2 +1,2 @@
-# vdl
-downloads a video by parts
+# fdl
+downloads a file by parts
