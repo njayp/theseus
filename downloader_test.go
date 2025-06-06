@@ -1,4 +1,4 @@
-package fdl
+package theseus
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 func TestDownload(t *testing.T) {
 	ctx := context.Background()
 	client := &http.Client{
-		Transport: mw.BuildTransport(mw.WithLimiter(limiter.WithCount(1))),
+		Transport: mw.BuildTransport(limiter.WithLimiter(limiter.WithCount(1))),
 	}
 	url := "https://download.samplelib.com/mp4/sample-30s.mp4"
 	filename := "test_video.mp4"
